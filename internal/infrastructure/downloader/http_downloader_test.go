@@ -2,7 +2,7 @@ package downloader
 
 import (
 	"bytes"
-	"image-previewer/internal/domain/valueObjects"
+	"image-previewer/internal/domain/dto"
 	"image-previewer/tests/mocks"
 	"io/ioutil"
 	"net/http"
@@ -14,6 +14,7 @@ import (
 )
 
 //go:generate mockgen -destination=../../../tests/mocks/mock_http_client.go -package=mocks image-previewer/internal/infrastructure/downloader Client
+//nolint:funlen
 func TestHttpDownloader_Download(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
@@ -27,9 +28,9 @@ func TestHttpDownloader_Download(t *testing.T) {
 				Body:       ioutil.NopCloser(bytes.NewReader(nil)),
 			}, nil)
 
-		img, err := NewHttpDownloader(client).Download(
+		img, err := NewHTTPDownloader(client).Download(
 			"http://yandex.ru/test.jpg",
-			valueObjects.ImageDimensions{
+			dto.ImageDimensions{
 				Width:  0,
 				Height: 0,
 			},
@@ -51,9 +52,9 @@ func TestHttpDownloader_Download(t *testing.T) {
 				Body:       ioutil.NopCloser(testFile),
 			}, nil)
 
-		img, err := NewHttpDownloader(client).Download(
+		img, err := NewHTTPDownloader(client).Download(
 			"http://yandex.ru/test.jpg",
-			valueObjects.ImageDimensions{
+			dto.ImageDimensions{
 				Width:  0,
 				Height: 0,
 			},
@@ -75,9 +76,9 @@ func TestHttpDownloader_Download(t *testing.T) {
 				Body:       ioutil.NopCloser(testFile),
 			}, nil)
 
-		img, err := NewHttpDownloader(client).Download(
+		img, err := NewHTTPDownloader(client).Download(
 			"http://yandex.ru/test.jpg",
-			valueObjects.ImageDimensions{
+			dto.ImageDimensions{
 				Width:  10000,
 				Height: 20000,
 			},
@@ -99,9 +100,9 @@ func TestHttpDownloader_Download(t *testing.T) {
 				Body:       ioutil.NopCloser(testFile),
 			}, nil)
 
-		img, err := NewHttpDownloader(client).Download(
+		img, err := NewHTTPDownloader(client).Download(
 			"http://yandex.ru/test.jpg",
-			valueObjects.ImageDimensions{
+			dto.ImageDimensions{
 				Width:  200,
 				Height: 200,
 			},

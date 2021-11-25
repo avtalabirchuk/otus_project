@@ -7,7 +7,7 @@ package mocks
 import (
 	gomock "github.com/golang/mock/gomock"
 	domain "image-previewer/internal/domain"
-	valueObjects "image-previewer/internal/domain/valueObjects"
+	dto "image-previewer/internal/domain/dto"
 	reflect "reflect"
 )
 
@@ -35,7 +35,7 @@ func (m *MockImageIDResolver) EXPECT() *MockImageIDResolverMockRecorder {
 }
 
 // ResolveImageID mocks base method
-func (m *MockImageIDResolver) ResolveImageID(arg0 string, arg1 valueObjects.ImageDimensions) domain.ImageID {
+func (m *MockImageIDResolver) ResolveImageID(arg0 string, arg1 dto.ImageDimensions) domain.ImageID {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ResolveImageID", arg0, arg1)
 	ret0, _ := ret[0].(domain.ImageID)

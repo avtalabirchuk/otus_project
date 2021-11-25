@@ -1,4 +1,4 @@
-package valueObjects
+package dto
 
 type ImageDimensions struct {
 	Width  int

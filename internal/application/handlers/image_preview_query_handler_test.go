@@ -4,7 +4,7 @@ import (
 	"image"
 	"image-previewer/internal/application/queries"
 	"image-previewer/internal/domain"
-	"image-previewer/internal/domain/valueObjects"
+	"image-previewer/internal/domain/dto"
 	"image-previewer/tests/mocks"
 	"image/jpeg"
 	"os"
@@ -17,6 +17,7 @@ import (
 //go:generate mockgen -destination=../../../tests/mocks/mock_preview_repository.go -package=mocks image-previewer/internal/domain PreviewRepository
 //go:generate mockgen -destination=../../../tests/mocks/mock_downloader.go -package=mocks image-previewer/internal/domain Downloader
 //go:generate mockgen -destination=../../../tests/mocks/mock_id_resolver.go -package=mocks image-previewer/internal/domain ImageIDResolver
+//nolint:funlen
 func TestImagePreviewQueryHandler_Handle(t *testing.T) {
 	ctrl := gomock.NewController(t)
 
@@ -28,8 +29,8 @@ func TestImagePreviewQueryHandler_Handle(t *testing.T) {
 		handler := NewImagePreviewQueryHandler(rep, downloader, idResolver)
 
 		img, err := handler.Handle(queries.ImagePreviewQuery{
-			Url: "http://ya.ru",
-			Dimensions: valueObjects.ImageDimensions{
+			URL: "http://ya.ru",
+			Dimensions: dto.ImageDimensions{
 				Width:  0,
 				Height: 200,
 			},
@@ -39,8 +40,8 @@ func TestImagePreviewQueryHandler_Handle(t *testing.T) {
 		require.Equal(t, err, ErrInvalidWidth)
 
 		img, err = handler.Handle(queries.ImagePreviewQuery{
-			Url: "http://ya.ru",
-			Dimensions: valueObjects.ImageDimensions{
+			URL: "http://ya.ru",
+			Dimensions: dto.ImageDimensions{
 				Width:  100,
 				Height: 0,
 			},
@@ -58,15 +59,15 @@ func TestImagePreviewQueryHandler_Handle(t *testing.T) {
 		handler := NewImagePreviewQueryHandler(rep, downloader, idResolver)
 
 		img, err := handler.Handle(queries.ImagePreviewQuery{
-			Url: "",
-			Dimensions: valueObjects.ImageDimensions{
+			URL: "",
+			Dimensions: dto.ImageDimensions{
 				Width:  100,
 				Height: 100,
 			},
 		})
 
 		require.Nil(t, img)
-		require.Equal(t, err, ErrEmptyUrl)
+		require.Equal(t, err, ErrEmptyURL)
 	})
 
 	t.Run("image found in repository", func(t *testing.T) {
@@ -95,8 +96,8 @@ func TestImagePreviewQueryHandler_Handle(t *testing.T) {
 		handler := NewImagePreviewQueryHandler(rep, downloader, idResolver)
 
 		img, err := handler.Handle(queries.ImagePreviewQuery{
-			Url: "http://ya.ru",
-			Dimensions: valueObjects.ImageDimensions{
+			URL: "http://ya.ru",
+			Dimensions: dto.ImageDimensions{
 				Width:  100,
 				Height: 200,
 			},
@@ -136,8 +137,8 @@ func TestImagePreviewQueryHandler_Handle(t *testing.T) {
 		handler := NewImagePreviewQueryHandler(rep, downloader, idResolver)
 
 		img, err := handler.Handle(queries.ImagePreviewQuery{
-			Url: "http://ya.ru",
-			Dimensions: valueObjects.ImageDimensions{
+			URL: "http://ya.ru",
+			Dimensions: dto.ImageDimensions{
 				Width:  100,
 				Height: 200,
 			},
@@ -147,7 +148,6 @@ func TestImagePreviewQueryHandler_Handle(t *testing.T) {
 		require.NotNil(t, img)
 		require.Same(t, img, actualImg)
 	})
-
 }
 
 func fakedImg() image.Image {

@@ -13,9 +13,9 @@ build:
 start:
 	.idea/app --config configs/config.yml
 
-build-docker:
+docker-run:
 	@docker build -t image-previewer:latest --target build .
-
+	@docker run -d -p 8080:8080 --name image-previewer image-previewer:latest
 up-server:
 
 

@@ -1,4 +1,4 @@
-package preview_repository
+package repository
 
 import (
 	"image"
@@ -15,7 +15,6 @@ import (
 var cacheDir = "../../../tests/data/cache/"
 
 func TestFileStorage_Add(t *testing.T) {
-
 	t.Run("valid response status", func(t *testing.T) {
 		defer cleanUp(cacheDir)
 
@@ -82,10 +81,10 @@ func TestFileStorage_FindOne(t *testing.T) {
 
 	t.Run("found case", func(t *testing.T) {
 		s := NewFileStorage(cacheDir, 5)
-		ImageID := domain.ImageID("test500.jpg")
-		_, _ = s.Add(ImageID, fakedImg())
+		imageID := domain.ImageID("test500.jpg")
+		_, _ = s.Add(imageID, fakedImg())
 
-		img, err := s.FindOne(ImageID)
+		img, err := s.FindOne(imageID)
 
 		require.NotNil(t, img)
 		require.Nil(t, err)
