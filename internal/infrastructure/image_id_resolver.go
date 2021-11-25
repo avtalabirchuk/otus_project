@@ -8,16 +8,16 @@ import (
 	"image-previewer/internal/domain/valueObjects"
 )
 
-type imageIdResolver struct {
+type ImageIDResolver struct {
 }
 
-func (r *imageIdResolver) ResolveImageId(url string, dim valueObjects.ImageDimensions) domain.ImageId  {
+func (r *ImageIDResolver) ResolveImageID(url string, dim valueObjects.ImageDimensions) domain.ImageID {
 	hash := md5.Sum([]byte(url))
-	imageId := fmt.Sprintf("%s_%dx%d", hex.EncodeToString(hash[:]), dim.Width, dim.Height)
+	ImageID := fmt.Sprintf("%s_%dx%d", hex.EncodeToString(hash[:]), dim.Width, dim.Height)
 
-	return domain.ImageId(imageId)
+	return domain.ImageID(ImageID)
 }
 
-func NewImageIdResolver() *imageIdResolver {
-	return &imageIdResolver{}
+func NewImageIDResolver() *ImageIDResolver {
+	return &ImageIDResolver{}
 }

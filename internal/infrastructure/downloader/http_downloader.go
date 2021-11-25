@@ -2,12 +2,13 @@ package downloader
 
 import (
 	"errors"
-	"github.com/disintegration/imaging"
-	"go.uber.org/zap"
 	"image"
 	"image-previewer/internal/domain/valueObjects"
 	"image/jpeg"
 	"net/http"
+
+	"github.com/disintegration/imaging"
+	"go.uber.org/zap"
 )
 
 var ErrResourceUnavailable = errors.New("image resource unavailable")
@@ -68,5 +69,3 @@ func NewHttpDownloader(c Client) *httpDownloader {
 		client: c,
 	}
 }
-
-

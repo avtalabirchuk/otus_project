@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"errors"
-	"go.uber.org/zap"
 	"image"
 	"image-previewer/internal/application/queries"
 	"image-previewer/internal/domain"
 	"net/url"
+
+	"go.uber.org/zap"
 )
 
 var ErrInvalidWidth = errors.New("width should be greater than 0")
@@ -18,7 +19,7 @@ var ErrNotFound = errors.New("img not found")
 type imagePreviewQueryHandler struct {
 	previewRepository domain.PreviewRepository
 	downloader        domain.Downloader
-	idResolver        domain.ImageIdResolver
+	idResolver        domain.ImageIDResolver
 }
 
 func (h *imagePreviewQueryHandler) Handle(q queries.ImagePreviewQuery) (image.Image, error) {
@@ -26,11 +27,11 @@ func (h *imagePreviewQueryHandler) Handle(q queries.ImagePreviewQuery) (image.Im
 		return nil, err
 	}
 
-	imageId := h.idResolver.ResolveImageId(q.Url, q.Dimensions)
+	ImageID := h.idResolver.ResolveImageID(q.Url, q.Dimensions)
 
-	zap.S().Debugf("started processing image %s", string(imageId))
+	zap.S().Debugf("started processing image %s", string(ImageID))
 
-	img, err := h.previewRepository.FindOne(imageId)
+	img, err := h.previewRepository.FindOne(ImageID)
 
 	if err != nil {
 		if err == ErrNotFound {
@@ -44,7 +45,7 @@ func (h *imagePreviewQueryHandler) Handle(q queries.ImagePreviewQuery) (image.Im
 
 			zap.S().Debug("adding to repository")
 
-			_, err = h.previewRepository.Add(imageId, img)
+			_, err = h.previewRepository.Add(ImageID, img)
 
 			if err != nil {
 				return nil, err
@@ -82,11 +83,11 @@ func (h *imagePreviewQueryHandler) checkQuery(q queries.ImagePreviewQuery) error
 func NewImagePreviewQueryHandler(
 	rep domain.PreviewRepository,
 	downloader domain.Downloader,
-	resolver domain.ImageIdResolver,
+	resolver domain.ImageIDResolver,
 ) *imagePreviewQueryHandler {
 	return &imagePreviewQueryHandler{
 		previewRepository: rep,
-		downloader: downloader,
-		idResolver: resolver,
+		downloader:        downloader,
+		idResolver:        resolver,
 	}
 }

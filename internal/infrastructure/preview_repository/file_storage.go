@@ -3,7 +3,6 @@ package preview_repository
 import (
 	"container/list"
 	"fmt"
-	"go.uber.org/zap"
 	"image"
 	"image-previewer/internal/application/handlers"
 	"image-previewer/internal/domain"
@@ -11,17 +10,19 @@ import (
 	"os"
 	"sync"
 	"time"
+
+	"go.uber.org/zap"
 )
 
 type fileStorage struct {
 	cacheDir string
 	capacity int
-	cache list.List
-	items map[domain.ImageId]*list.Element
-	mux sync.Mutex
+	cache    list.List
+	items    map[domain.ImageID]*list.Element
+	mux      sync.Mutex
 }
 
-func (r *fileStorage) FindOne(id domain.ImageId) (image.Image, error) {
+func (r *fileStorage) FindOne(id domain.ImageID) (image.Image, error) {
 	r.mux.Lock()
 	defer r.mux.Unlock()
 
@@ -46,7 +47,7 @@ func (r *fileStorage) FindOne(id domain.ImageId) (image.Image, error) {
 	return img, nil
 }
 
-func (r *fileStorage) Add(id domain.ImageId, img image.Image) (bool, error) {
+func (r *fileStorage) Add(id domain.ImageID, img image.Image) (bool, error) {
 	r.mux.Lock()
 	defer r.mux.Unlock()
 
@@ -69,7 +70,10 @@ func (r *fileStorage) Add(id domain.ImageId, img image.Image) (bool, error) {
 		zap.S().Debugf("cache capacity limit exceed, removing last item")
 
 		lastItem := r.cache.Back()
-		lastItemId := lastItem.Value.(domain.ImageId)
+		lastItemId, ok := lastItem.Value.(domain.ImageID)
+		if !ok {
+			return false, nil
+		}
 
 		if err := r.removePreview(lastItemId); err != nil {
 			return false, err
@@ -95,7 +99,7 @@ func (r *fileStorage) Len() int {
 	return r.cache.Len()
 }
 
-func (r *fileStorage) savePreview(id domain.ImageId, img image.Image) error {
+func (r *fileStorage) savePreview(id domain.ImageID, img image.Image) error {
 	path := r.pathById(id)
 
 	out, err := os.Create(path)
@@ -113,7 +117,7 @@ func (r *fileStorage) savePreview(id domain.ImageId, img image.Image) error {
 	return nil
 }
 
-func (r *fileStorage) loadPreview(id domain.ImageId) (image.Image, error) {
+func (r *fileStorage) loadPreview(id domain.ImageID) (image.Image, error) {
 	path := r.pathById(id)
 
 	file, err := os.Open(path)
@@ -133,7 +137,7 @@ func (r *fileStorage) loadPreview(id domain.ImageId) (image.Image, error) {
 	return img, nil
 }
 
-func (r *fileStorage) removePreview(id domain.ImageId) error {
+func (r *fileStorage) removePreview(id domain.ImageID) error {
 	path := r.pathById(id)
 
 	if err := os.Remove(path); err != nil {
@@ -143,7 +147,7 @@ func (r *fileStorage) removePreview(id domain.ImageId) error {
 	return nil
 }
 
-func (r *fileStorage) touchPreview(id domain.ImageId) error {
+func (r *fileStorage) touchPreview(id domain.ImageID) error {
 	path := r.pathById(id)
 
 	if err := os.Chtimes(path, time.Now(), time.Now()); err != nil {
@@ -153,7 +157,7 @@ func (r *fileStorage) touchPreview(id domain.ImageId) error {
 	return nil
 }
 
-func (r *fileStorage) pathById(id domain.ImageId) string {
+func (r *fileStorage) pathById(id domain.ImageID) string {
 	return r.cacheDir + string(id)
 }
 
@@ -161,6 +165,6 @@ func NewFileStorage(cacheDir string, capacity int) *fileStorage {
 	return &fileStorage{
 		cacheDir: cacheDir,
 		capacity: capacity,
-		items: make(map[domain.ImageId]*list.Element),
+		items:    make(map[domain.ImageID]*list.Element),
 	}
 }

@@ -1,6 +1,6 @@
 package valueObjects
 
 type ImageDimensions struct {
-	Width int
+	Width  int
 	Height int
 }

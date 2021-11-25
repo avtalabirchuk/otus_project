@@ -2,8 +2,8 @@ package domain
 
 import "image-previewer/internal/domain/valueObjects"
 
-type ImageId string
+type ImageID string
 
-type ImageIdResolver interface {
-	ResolveImageId(url string, dim valueObjects.ImageDimensions) ImageId
+type ImageIDResolver interface {
+	ResolveImageID(url string, dim valueObjects.ImageDimensions) ImageID
 }

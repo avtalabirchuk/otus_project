@@ -3,9 +3,6 @@ package internal
 import (
 	"bytes"
 	"errors"
-	"github.com/gorilla/mux"
-	"github.com/spf13/viper"
-	"go.uber.org/zap"
 	"image-previewer/internal/application/handlers"
 	"image-previewer/internal/application/queries"
 	"image-previewer/internal/domain/valueObjects"
@@ -15,6 +12,10 @@ import (
 	"image/jpeg"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
+	"github.com/spf13/viper"
+	"go.uber.org/zap"
 )
 
 type app struct {
@@ -37,7 +38,7 @@ func (app *app) Run() error {
 	}
 
 	rep := preview_repository.NewFileStorage(cacheDir, capacity)
-	idResolver := infrastructure.NewImageIdResolver()
+	idResolver := infrastructure.NewImageIDResolver()
 	httpDownloader := downloader.NewHttpDownloader(downloader.NewHttpClient())
 
 	queryHandler := handlers.NewImagePreviewQueryHandler(rep, httpDownloader, idResolver)
@@ -65,7 +66,7 @@ func (app *app) Run() error {
 		img, err := queryHandler.Handle(queries.ImagePreviewQuery{
 			Url: vars["url"],
 			Dimensions: valueObjects.ImageDimensions{
-				Width: width,
+				Width:  width,
 				Height: height,
 			},
 		})
