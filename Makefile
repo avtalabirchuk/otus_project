@@ -1,3 +1,4 @@
+name=image-previewer
 test:
 	go test -race -v `go list ./...`
 
@@ -14,15 +15,12 @@ start:
 	.idea/app --config configs/config.yml
 
 docker-run:
-	@docker build -t image-previewer:latest --target build .
-	@docker run -d -p 8080:8080 --name image-previewer image-previewer:latest
-up-server:
+	@docker build -t ${name}:latest .
+	@docker run -d -p 8080:8080 --name ${name} ${name}:latest
+
+docker-down:
+	@docker stop ${name} && docker rm ${name}
 
 
-down-server:
-
-
-stop-server:
-
-
-start-server:
+clear_cache:
+	@rm -rf cache/*
