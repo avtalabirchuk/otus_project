@@ -18,7 +18,7 @@ func (f RoundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
 
 func NewTestClient(fn RoundTripFunc) *http.Client {
 	return &http.Client{
-		Transport: RoundTripFunc(fn),
+		Transport: fn,
 	}
 }
 
@@ -41,8 +41,10 @@ func TestHTTPClient_Get(t *testing.T) {
 		headers["Accept"] = []string{"application/json"}
 
 		resp, err := httpClient.Get("yandex.ru/image.png", headers)
-
 		require.Nil(t, err)
+
+		defer resp.Body.Close()
+
 		require.Equal(t, 200, resp.StatusCode)
 	})
 }

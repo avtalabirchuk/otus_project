@@ -11,4 +11,4 @@ FROM alpine
 COPY --from=build /out/app .
 COPY --from=build /src/configs/config.yml configs/
 COPY --from=build /src/cache cache
-CMD ["./app", "--config", "configs/config.yml"]
+CMD ["./app"]

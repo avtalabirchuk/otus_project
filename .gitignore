@@ -1,5 +1,5 @@
 /.idea
 
-/cache
+/cache/*
 
 .DS_Store
