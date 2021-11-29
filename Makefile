@@ -16,11 +16,10 @@ start:
 
 docker-run:
 	@docker build -t ${name}:latest .
-	@docker run -d -p 8080:8080 --name ${name} ${name}:latest
+	@docker run -d -p 8080:8080 -v ${PWD}/cache:/cache --name ${name} ${name}:latest
 
 docker-down:
 	@docker stop ${name} && docker rm ${name}
-
 
 clear_cache:
 	@rm -rf cache/*
