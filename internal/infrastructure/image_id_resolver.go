@@ -1,23 +1,24 @@
 package infrastructure
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
+	"hash/fnv"
 	"image-previewer/internal/domain"
-	"image-previewer/internal/domain/valueObjects"
+	"image-previewer/internal/domain/dto"
 )
 
-type imageIdResolver struct {
+type ImageIDResolver struct {
 }
 
-func (r *imageIdResolver) ResolveImageId(url string, dim valueObjects.ImageDimensions) domain.ImageId  {
-	hash := md5.Sum([]byte(url))
-	imageId := fmt.Sprintf("%s_%dx%d", hex.EncodeToString(hash[:]), dim.Width, dim.Height)
+func (r *ImageIDResolver) ResolveImageID(url string, dim dto.ImageDimensions) domain.ImageID {
+	h := fnv.New32a()
+	_, _ = h.Write([]byte(url))
 
-	return domain.ImageId(imageId)
+	imageID := fmt.Sprintf("%d_%dx%d", int(h.Sum32()), dim.Width, dim.Height)
+
+	return domain.ImageID(imageID)
 }
 
-func NewImageIdResolver() *imageIdResolver {
-	return &imageIdResolver{}
+func NewImageIDResolver() *ImageIDResolver {
+	return &ImageIDResolver{}
 }

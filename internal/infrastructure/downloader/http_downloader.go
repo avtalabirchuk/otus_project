@@ -2,40 +2,27 @@ package downloader
 
 import (
 	"errors"
-	"github.com/disintegration/imaging"
-	"go.uber.org/zap"
 	"image"
-	"image-previewer/internal/domain/valueObjects"
+	"image-previewer/internal/domain"
+	"image-previewer/internal/domain/dto"
 	"image/jpeg"
 	"net/http"
+
+	"github.com/disintegration/imaging"
+	"go.uber.org/zap"
 )
 
-var ErrResourceUnavailable = errors.New("image resource unavailable")
-var ErrInvalidJpeg = errors.New("image should have correct jpeg struct")
-var ErrSourceHasWrongDimensions = errors.New("source image has wrong dimensions")
+var (
+	ErrResourceUnavailable = errors.New("image resource unavailable")
+	ErrInvalidJpeg         = errors.New("image should have correct jpeg struct")
+)
 
-type Client interface {
-	Get(url string) (resp *http.Response, err error)
-}
-
-type httpClient struct {
-}
-
-func (c *httpClient) Get(url string) (resp *http.Response, err error) {
-	return http.Get(url)
-}
-
-func NewHttpClient() *httpClient {
-	return &httpClient{}
-}
-
-type httpDownloader struct {
+type HTTPDownloader struct {
 	client Client
 }
 
-func (d *httpDownloader) Download(url string, dim valueObjects.ImageDimensions) (image.Image, error) {
-	resp, err := d.client.Get("http://" + url)
-
+func (d *HTTPDownloader) Download(url string, dim dto.ImageDimensions, headers domain.RequestHeaders) (image.Image, error) {
+	resp, err := d.client.Get(url, headers)
 	if err != nil {
 		return nil, err
 	}
@@ -47,26 +34,17 @@ func (d *httpDownloader) Download(url string, dim valueObjects.ImageDimensions) 
 	}
 
 	img, err := jpeg.Decode(resp.Body)
-
 	if err != nil {
 		return nil, ErrInvalidJpeg
 	}
 
-	bounds := img.Bounds()
-
-	if bounds.Dx() < dim.Width || bounds.Dy() < dim.Height {
-		return nil, ErrSourceHasWrongDimensions
-	}
-
-	zap.S().Debugf("crop downloaded image %d x %d", dim.Width, dim.Height)
+	zap.S().Debugf("resizing downloaded image %d x %d", dim.Width, dim.Height)
 
 	return imaging.Fill(img, dim.Width, dim.Height, imaging.Center, imaging.Lanczos), nil
 }
 
-func NewHttpDownloader(c Client) *httpDownloader {
-	return &httpDownloader{
+func NewHTTPDownloader(c Client) *HTTPDownloader {
+	return &HTTPDownloader{
 		client: c,
 	}
 }
-
-
