@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  image-previewer:
+    build:
+      context: ./
+    volumes:
+      - ./cache:/cache
+    ports:
+      - "8080:8080"

@@ -14,12 +14,11 @@ build:
 start:
 	.idea/app --config configs/config.yml
 
-docker-run:
-	@docker build -t ${name}:latest .
-	@docker run -d -p 8080:8080 -v ${PWD}/cache:/cache --name ${name} ${name}:latest
+run:
+	docker-compose up -d --build
 
-docker-down:
-	@docker stop ${name} && docker rm ${name}
+down:
+	docker-compose down -v
 
 clear_cache:
 	@rm -rf cache/*
